@@ -8,7 +8,7 @@ public class BayesianClassifier {
 		BayesianClassifier token = new BayesianClassifier();
 		String str = "Hello, everyone. Do you like the new layout?";
 		System.out.println("String:\t\t" + str);	
-		String[] tokens = token.tokenizer(str);
+		String[] tokens = Tools.tokenize(str);
 		System.out.println("Tokenized:\t" + Arrays.toString(tokens));	
 	}
 }
