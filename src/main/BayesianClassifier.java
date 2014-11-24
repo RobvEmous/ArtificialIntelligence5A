@@ -12,7 +12,7 @@ public class BayesianClassifier {
 	}
 	
 	public static void main(String[] args) {
-		BayesianClassifier token = new BayesianClassifier();
+		BayesianClassifier token = new BayesianClassifier(null);
 		String str = "Hello, everyone. Do you like the new layout?";
 		System.out.println("String:\t\t" + str);	
 		String[] tokens = Tools.tokenize(str);

@@ -2,9 +2,8 @@ package main;
 
 import java.io.FileNotFoundException;
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
 
 public class TrainerTest {
@@ -12,34 +11,47 @@ public class TrainerTest {
 	Classification female;
 	
 	
-	public void Trainer() {
+	public TrainerTest() {
 		male = new Classification("male");
 		female = new Classification("female");
 	}
 		
 	public void trainer(Classification type, File file){
-		Scanner scanner;
 		try {
-			scanner = new Scanner(file);
-			while(scanner.hasNext()) {
-				type.addTrainData(Tools.tokenize(scanner.nextLine()));
-			}
-			scanner.close();
+			@SuppressWarnings("resource")
+			Scanner scan = new Scanner(file).useDelimiter("\\Z");
+			String line = scan.next();
+			type.addTrainData(Tools.tokenize(line));
+			scan.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public void run() {
-		String[] femaleFiles = new File("blogstrain/F").list();
-		String[] maleFiles = new File("blogstrain/M").list();
+		String femalePath = "blogstrain/F/";
+		String malePath = "blogstrain/M/";
+		String[] femaleFiles = new File(femalePath).list();
+		String[] maleFiles = new File(malePath).list();
 		for(String file : femaleFiles) {
-			trainer(female, new File(file));
+			trainer(female, new File(femalePath + file));
 		}
 		for(String file : maleFiles) {
-			trainer(male, new File(file));
+			trainer(male, new File(malePath + file));
 		}
-
+		
+		try {
+			PrintWriter maleWriter = new PrintWriter("male.txt", "UTF-8");
+			PrintWriter femaleWriter = new PrintWriter("female.txt", "UTF-8");
+			maleWriter.println(male.toWriteableString());
+			femaleWriter.println(female.toWriteableString());
+			maleWriter.close();
+			femaleWriter.close();
+		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println(male.toWriteableString());
 	}
 	
 	public static void main(String[] args) {
