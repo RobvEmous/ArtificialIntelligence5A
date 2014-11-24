@@ -70,7 +70,7 @@ public class Classification {
 	 */
 	public void addTrainData(String[] words) {
 		for (String word : words) {
-			if (word.equals("")) {
+			if (word.equals("") || word.length() <= 2) {
 				continue;
 			}
 			wordCounter++;
@@ -106,9 +106,14 @@ public class Classification {
 		} else {
 			occurence = 0;
 		}
+<<<<<<< Updated upstream
 		double temp = (double) (occurence + smoothFactor) / 
 				(double)(wordCounter + smoothFactor * trainData.size());
 		return temp;
+=======
+		return (double)(occurence + smoothFactor) / 
+				(double)(wordCounter + smoothFactor * trainData.size());
+>>>>>>> Stashed changes
 	}
 	
 	/**
@@ -136,7 +141,11 @@ public class Classification {
 	 * @return the string to write
 	 */
 	public String toWriteableString() {
+<<<<<<< Updated upstream
 		StringBuilder sb = new StringBuilder();
+=======
+		StringBuilder sb = new StringBuilder();		
+>>>>>>> Stashed changes
 		sb.append(wordCounter);
 		sb.append(System.lineSeparator());
 		for (String word : trainData.keySet()) {
