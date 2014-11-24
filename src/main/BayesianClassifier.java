@@ -12,3 +12,4 @@ public class BayesianClassifier {
 		System.out.println("Tokenized:\t" + Arrays.toString(tokens));	
 	}
 }
+

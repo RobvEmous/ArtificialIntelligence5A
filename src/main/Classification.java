@@ -1,6 +1,9 @@
 package main;
 
 import java.util.HashMap;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -88,6 +91,4 @@ public class Classification {
 		}
 		return sb.toString();
 	}
-	
-	
 }
