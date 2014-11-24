@@ -6,12 +6,12 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
 
-public class TrainerTest {
-	Classification male;
-	Classification female;
+public class Trainer {
+	private static Classification male;
+	private static Classification female;
 	
 	
-	public TrainerTest() {
+	public Trainer() {
 		male = new Classification("male");
 		female = new Classification("female");
 	}
@@ -28,7 +28,7 @@ public class TrainerTest {
 		}
 	}
 	
-	public void run() {
+	public void createModels() {
 		String femalePath = "blogstrain/F/";
 		String malePath = "blogstrain/M/";
 		String[] femaleFiles = new File(femalePath).list();
@@ -39,7 +39,8 @@ public class TrainerTest {
 		for(String file : maleFiles) {
 			trainer(male, new File(malePath + file));
 		}
-		
+		male.cleanData(30);
+		female.cleanData(30);
 		try {
 			PrintWriter maleWriter = new PrintWriter("male.txt", "UTF-8");
 			PrintWriter femaleWriter = new PrintWriter("female.txt", "UTF-8");
@@ -54,8 +55,31 @@ public class TrainerTest {
 		System.out.println(male.toWriteableString());
 	}
 	
+	public static Scanner createScanner(File file) {
+		Scanner scan = null;
+		try {
+			scan = new Scanner(file);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return scan;
+	}
+	
 	public static void main(String[] args) {
-		TrainerTest test = new TrainerTest();
-		test.run();
+		Trainer test = new Trainer();
+		File femaleModel = new File("female.txt");
+		File maleModel = new File("male.txt");
+		//if(!femaleModel.exists() && !maleModel.exists()) { 
+			male = new Classification("male");
+			female = new Classification("female");
+			test.createModels();
+		/*} else {
+			male = new Classification("male", createScanner(maleModel));
+			female = new Classification("female", createScanner(femaleModel));
+		}*/
+		;
+		Classification[] classificationObjects = new Classification[]{male,female};
+		new BayesianClassifier(classificationObjects);
+		
 	}
 }

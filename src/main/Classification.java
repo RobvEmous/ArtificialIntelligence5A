@@ -90,7 +90,7 @@ public class Classification {
 	 * @param smoothFactor the factor to smooth the results with
 	 * @return the match percentage
 	 */
-	public double matchWords(String[] words, int smoothFactor) {
+	public double matchWords(String[] words, double smoothFactor) {
 		double chance = 0d;
 		for (String word : words) {
 			chance += Math.log10(matchWord(word, smoothFactor)) 
@@ -99,15 +99,16 @@ public class Classification {
 		return chance;
 	}
 	
-	private double matchWord(String word, int smoothFactor) {
+	private double matchWord(String word, double smoothFactor) {
 		int occurence;
 		if (trainData.containsKey(word)) {
 			occurence = trainData.get(word);
 		} else {
 			occurence = 0;
 		}
-		return (occurence + smoothFactor) / 
-				(wordCounter + smoothFactor * trainData.size());
+		double temp = (double) (occurence + smoothFactor) / 
+				(double)(wordCounter + smoothFactor * trainData.size());
+		return temp;
 	}
 	
 	/**
@@ -135,7 +136,8 @@ public class Classification {
 	 * @return the string to write
 	 */
 	public String toWriteableString() {
-		StringBuilder sb = new StringBuilder(wordCounter);		
+		StringBuilder sb = new StringBuilder();
+		sb.append(wordCounter);
 		sb.append(System.lineSeparator());
 		for (String word : trainData.keySet()) {
 			sb.append(word);
