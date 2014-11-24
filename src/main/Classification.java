@@ -10,6 +10,7 @@ public class Classification {
 	
 	private String type; //male or female etc.
 	private Map<String, Integer> trainData;
+	private int wordCounter = 0;
 	
 	public Classification(String type, Map<String, Integer> trainData) {
 		this.type = type;
@@ -25,11 +26,11 @@ public class Classification {
 	 * 
 	 * @param savedFile the saved train data
 	 */
-	public Classification(Scanner savedFile) {
+	public Classification(String type, Scanner savedFile) {
 		if (savedFile.hasNextLine()) {
-			type = savedFile.nextLine();
+			wordCounter = Integer.parseInt(savedFile.nextLine());
 		} else {
-			type = null;
+			wordCounter = -1;
 		}
 		trainData = new HashMap<String, Integer>();
 		while (savedFile.hasNextLine()) {
@@ -51,6 +52,10 @@ public class Classification {
 		this.type = type;
 	}
 	
+	public int getWordCounter() {
+		return wordCounter;
+	}
+	
 	public Map<String, Integer> getTrainData() {
 		return trainData;
 	}
@@ -68,6 +73,7 @@ public class Classification {
 			if (word.equals("")) {
 				continue;
 			}
+			wordCounter++;
 			if (trainData.containsKey(word)) {
 				trainData.put(word, trainData.get(word) + 1);
 			} else {
@@ -75,9 +81,38 @@ public class Classification {
 			}
 		}
 	}
+		
+	/**
+	 * Gets the percentage the list of words (from a document?) match with
+	 * this classification.
+	 * 
+	 * @param words to test
+	 * @param smoothFactor the factor to smooth the results with
+	 * @return the match percentage
+	 */
+	public double matchWords(String[] words, int smoothFactor) {
+		double chance = 0d;
+		for (String word : words) {
+			chance += Math.log10(matchWord(word, smoothFactor)) 
+						/ Math.log10(2);
+		}
+		return chance;
+	}
+	
+	private double matchWord(String word, int smoothFactor) {
+		int occurence;
+		if (trainData.containsKey(word)) {
+			occurence = trainData.get(word);
+		} else {
+			occurence = 0;
+		}
+		return (occurence + smoothFactor) / 
+				(wordCounter + smoothFactor * trainData.size());
+	}
 	
 	/**
-	 * Removes all words which do not occur a certain amount of times.
+	 * Removes all words which do not occur a certain amount of times.<br>
+	 * Only call this after done training.
 	 * 
 	 * @param minOccurence the amount of times
 	 */
@@ -100,7 +135,8 @@ public class Classification {
 	 * @return the string to write
 	 */
 	public String toWriteableString() {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder(wordCounter);		
+		sb.append(System.lineSeparator());
 		for (String word : trainData.keySet()) {
 			sb.append(word);
 			sb.append(" ");
