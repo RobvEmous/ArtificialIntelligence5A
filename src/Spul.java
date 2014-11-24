@@ -1,4 +1,0 @@
-s
-public class Spul {
-
-}
