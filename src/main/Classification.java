@@ -106,14 +106,8 @@ public class Classification {
 		} else {
 			occurence = 0;
 		}
-<<<<<<< Updated upstream
-		double temp = (double) (occurence + smoothFactor) / 
-				(double)(wordCounter + smoothFactor * trainData.size());
-		return temp;
-=======
 		return (double)(occurence + smoothFactor) / 
 				(double)(wordCounter + smoothFactor * trainData.size());
->>>>>>> Stashed changes
 	}
 	
 	/**
@@ -141,11 +135,7 @@ public class Classification {
 	 * @return the string to write
 	 */
 	public String toWriteableString() {
-<<<<<<< Updated upstream
 		StringBuilder sb = new StringBuilder();
-=======
-		StringBuilder sb = new StringBuilder();		
->>>>>>> Stashed changes
 		sb.append(wordCounter);
 		sb.append(System.lineSeparator());
 		for (String word : trainData.keySet()) {
