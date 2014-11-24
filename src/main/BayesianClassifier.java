@@ -45,8 +45,8 @@ public class BayesianClassifier {
 		String[] maleFiles = new File(malePath).list();
 		ArrayList<String> toReturn = new ArrayList<String>();
 		for(String file : femaleFiles) {
-			//toReturn.add(classified(new File(femalePath + file)) + " " + file);
-			toReturn.add(classified(new File(femalePath + file)));
+			toReturn.add(classified(new File(femalePath + file)) + " " + file);
+			//toReturn.add(classified(new File(femalePath + file)));
 		}
 		for(String file : maleFiles) {
 			toReturn.add(classified(new File(malePath + file)));
