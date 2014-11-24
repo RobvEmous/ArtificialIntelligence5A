@@ -1,17 +1,14 @@
 package main;
 
+import java.util.Arrays;
+
 public class BayesianClassifier {
-	public String[] tokenizer(String input) {
-		return input.replaceAll("(?!\")\\p{Punct}", "").toLowerCase().split("\\s+");
-	}
 	
 	public static void main(String[] args) {
 		BayesianClassifier token = new BayesianClassifier();
 		String str = "Hello, everyone. Do you like the new layout?";
+		System.out.println("String:\t\t" + str);	
 		String[] tokens = token.tokenizer(str);
-		for (int i = 0; i < tokens.length; i++) {
-			System.out.println(tokens[i]);
-		}
-		
+		System.out.println("Tokenized:\t" + Arrays.toString(tokens));	
 	}
 }
