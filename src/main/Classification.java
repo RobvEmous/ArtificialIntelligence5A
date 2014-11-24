@@ -1,6 +1,8 @@
 package main;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class Classification {
 	
@@ -11,9 +13,33 @@ public class Classification {
 		this.type = type;
 		this.trainData = trainData;
 	}
+
 	
 	public Classification(String type) {
-		this(type, null);
+		this(type, new HashMap<String, Integer>());
+	}
+	
+	/**
+	 * Creates a classification from already trained data.
+	 * 
+	 * @param savedFile the saved train data
+	 */
+	public Classification(Scanner savedFile) {
+		if (savedFile.hasNextLine()) {
+			type = savedFile.nextLine();
+		} else {
+			type = null;
+		}
+		trainData = new HashMap<String, Integer>();
+		while (savedFile.hasNextLine()) {
+			String[] wordAndOcc = savedFile.nextLine().split(" ");
+			if (wordAndOcc.length == 2) {
+				try {
+					trainData.put(wordAndOcc[0], 
+							Integer.parseInt(wordAndOcc[1]));
+				} catch (NumberFormatException e) {}
+			}
+		}
 	}
 	
 	public String getType() {
@@ -32,6 +58,10 @@ public class Classification {
 		this.trainData = trainData;
 	}
 	
+	/**
+	 * Add data to train the classification.
+	 * @param words
+	 */
 	public void addTrainData(String[] words) {
 		for (String word : words) {
 			if (trainData.containsKey(word)) {
@@ -40,6 +70,23 @@ public class Classification {
 				trainData.put(word, 1);
 			}
 		}
+	}
+	
+	/**
+	 * Get the String representation of the train data to write it to a 
+	 * file.
+	 * 
+	 * @return the string to write
+	 */
+	public String toWriteableString() {
+		StringBuilder sb = new StringBuilder();
+		for (String word : trainData.keySet()) {
+			sb.append(word);
+			sb.append(" ");
+			sb.append(trainData.get(word));
+			sb.append(System.lineSeparator());
+		}
+		return sb.toString();
 	}
 	
 	
