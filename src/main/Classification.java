@@ -1,6 +1,8 @@
 package main;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -14,7 +16,6 @@ public class Classification {
 		this.trainData = trainData;
 	}
 
-	
 	public Classification(String type) {
 		this(type, new HashMap<String, Integer>());
 	}
@@ -64,11 +65,31 @@ public class Classification {
 	 */
 	public void addTrainData(String[] words) {
 		for (String word : words) {
+			if (word.equals("")) {
+				continue;
+			}
 			if (trainData.containsKey(word)) {
 				trainData.put(word, trainData.get(word) + 1);
 			} else {
 				trainData.put(word, 1);
 			}
+		}
+	}
+	
+	/**
+	 * Removes all words which do not occur a certain amount of times.
+	 * 
+	 * @param minOccurence the amount of times
+	 */
+	public void cleanData(int minOccurence) {
+		List<String> toBeRemoved = new ArrayList<String>();
+		for (String word : trainData.keySet()) {
+			if (trainData.get(word) < minOccurence) {
+				toBeRemoved.add(word);
+			}
+		}
+		for (String word : toBeRemoved) {
+			trainData.remove(word);
 		}
 	}
 	
