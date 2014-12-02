@@ -54,6 +54,10 @@ public class WekaHandlerBlog {
 			Evaluation ev = new Evaluation(newTrain);
 			ev.evaluateModel(cs, newTest);
 			System.out.println(ev.toSummaryString("\nResults\n=====\n", false));
+			
+			for(int i = 0; i < cs.getOptions().length; i++) {
+				System.out.println(cs.getOptions()[i]);
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -74,7 +78,7 @@ public class WekaHandlerBlog {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/**
 	 * IF PREFILTERING then StringToWordVector is used 
 	 * else raw data is generated with only content and class values as attributes
@@ -151,7 +155,7 @@ public class WekaHandlerBlog {
 	 */
 	public static FilteredClassifier trainFilteredClassifier(Instances data) {
 		try {
-			NaiveBayes classifierNaiveBayes = new NaiveBayes();
+			NaiveBayes classifierNaiveBayes = new NaiveBayes();			
 			filter.setAttributeIndices("first");
 			FilteredClassifier fClassifier = new FilteredClassifier();
 			fClassifier.setClassifier(classifierNaiveBayes);
