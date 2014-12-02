@@ -15,11 +15,6 @@ import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
-/**
- * @author Derk Snijders
- * @date 1-12-2014
- */
-
 public class WekaHandlerBlog {
 
 	// Change this value to either explicitly apply pre-filtering (visible in
@@ -27,8 +22,8 @@ public class WekaHandlerBlog {
 	public static final boolean PREFILTERING = false;
 
 	public static String corpusFolderPath = "corpus-mails";
-	public static String trainPath = "corpus-mails";
-	public static String testPath = "corpus-mails/corpus/part10";
+	public static String trainPath = "blogstrain";
+	public static String testPath = "blogstest";
 
 	public static String spamString = "buy $ now!";
 	public static String hamString = "This won't waste your time, as it is not spam.";
@@ -36,7 +31,7 @@ public class WekaHandlerBlog {
 
 	public static void main(String[] args) {
 		Instances data = buildARFF(new File(trainPath));
-		//writeARFF(data, "GeneratedARFF.arff");
+		writeARFF(data, "GeneratedARFF.arff");
 		weka.classifiers.Classifier cs = PREFILTERING ? trainJ48(data)
 				: trainFilteredClassifier(data);
 
@@ -77,8 +72,8 @@ public class WekaHandlerBlog {
 		FastVector atts = new FastVector();
 		FastVector classVal = new FastVector();
 		FastVector nullValue = null;
-		classVal.addElement("SPAM");
-		classVal.addElement("HAM");
+		classVal.addElement("Male");
+		classVal.addElement("Female");
 		atts.addElement(new Attribute("content", nullValue));
 		atts.addElement(new Attribute("@@class@@", classVal));
 		Instances dataRaw = new Instances("GeneratedARFF", atts, 0);
@@ -113,9 +108,9 @@ public class WekaHandlerBlog {
 			if (fileEntry.isDirectory()) {
 				cascadeBuildARFF(dataRaw, fileEntry);
 			} else {
-				if (fileEntry.getName().contains("spmsgc")) {
+				if (fileEntry.getName().contains("M")) {
 					addFileAsContent(fileEntry, dataRaw, true);
-				} else if (fileEntry.getName().contains("msg")) {
+				} else if (fileEntry.getName().contains("F")) {
 					addFileAsContent(fileEntry, dataRaw, false);
 				} else {
 					System.out.println("Unkown file: " + fileEntry.getName());
@@ -125,13 +120,13 @@ public class WekaHandlerBlog {
 	}
 
 	private static void addFileAsContent(File content, Instances data,
-			boolean spam) {
+			boolean male) {
 		double[] instanceValue = new double[data.numAttributes()];
 		try {
 			;
 			instanceValue[0] = data.attribute(0).addStringValue(
 					new Scanner(content).useDelimiter("\\A").next());
-			instanceValue[1] = spam ? 0 : 1;
+			instanceValue[1] = male ? 0 : 1;
 			data.add(new Instance(1.0, instanceValue));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
