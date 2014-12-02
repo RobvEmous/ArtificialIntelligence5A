@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
 
+import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.classifiers.trees.J48;
 import weka.core.Attribute;
@@ -26,7 +27,7 @@ public class WekaHandlerBlog {
 
 	// Change this value to either explicitly apply pre-filtering (visible in
 	// the .arff), or to apply it internally, when building the classifier.
-	public static final boolean PREFILTERING = false;
+	public static final boolean PREFILTERING = true;
 
 	public static String corpusFolderPath = "corpus-mails";
 	public static String trainPath = "blogstrain";
@@ -37,9 +38,12 @@ public class WekaHandlerBlog {
 	public static String spamString2 = "It is not possible to unsubscribe from this spam, haha!";
 
 	public static void main(String[] args) {
-		Instances data = buildARFF(new File(trainPath));
-		writeARFF(data, "GeneratedARFF.arff");
-		weka.classifiers.Classifier cs = PREFILTERING ? trainJ48(data)
+		Instances trainData = buildARFF(new File(trainPath));
+		writeARFF(trainData, "train.arff");
+		Instances testData = buildARFF(new File(testPath));
+		writeARFF(testData, "test.arff");
+		
+		/*weka.classifiers.Classifier cs = PREFILTERING ? trainNaiveBayes(data)
 				: trainFilteredClassifier(data);
 
 		double expectedSpam = classifyString(data, cs, spamString);
@@ -52,7 +56,7 @@ public class WekaHandlerBlog {
 
 		double expectedSpam2 = classifyString(data, cs, spamString2);
 		System.out.println("\nExpectedSpam:\n" + spamString2 + "\nResult: "
-				+ (expectedSpam2 == 1.0 ? "HAM" : "SPAM"));
+				+ (expectedSpam2 == 1.0 ? "HAM" : "SPAM"));*/
 	}
 
 	private static void writeARFF(Instances data, String fileName) {
@@ -170,9 +174,24 @@ public class WekaHandlerBlog {
 		System.out.println("Training J48");
 		try {
 			J48 classifierJ48 = new J48();
+			new NaiveBayes();
 			classifierJ48.buildClassifier(data);
 			System.out.println(classifierJ48);
 			return classifierJ48;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static NaiveBayes trainNaiveBayes(Instances data) {
+		// train NaiveBayes and output model
+		System.out.println("Training J48");
+		try {
+			NaiveBayes classifierNaiveBayes = new NaiveBayes();
+			classifierNaiveBayes.buildClassifier(data);
+			System.out.println(classifierNaiveBayes);
+			return classifierNaiveBayes;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
