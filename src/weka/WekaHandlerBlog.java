@@ -15,6 +15,13 @@ import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
+/**
+ * @author Rob van Emous
+ * @author Mark van Doesum
+ * @author Victor Lap
+ * @date 2-12-2014
+ */
+
 public class WekaHandlerBlog {
 
 	// Change this value to either explicitly apply pre-filtering (visible in
