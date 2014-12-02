@@ -8,7 +8,6 @@ import java.util.Scanner;
 
 import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.meta.FilteredClassifier;
-import weka.classifiers.trees.J48;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
@@ -42,11 +41,14 @@ public class WekaHandlerBlog {
 		weka.classifiers.Classifier cs = PREFILTERING ? trainNaiveBayes(trainData)
 				: trainFilteredClassifier(trainData);
 		
+		
 		for(int i = 0; i < testData.numAttributes(); i++) {
-			double value = classifyInstance(trainData, cs, testData.instance(i));
+			double value = classifyInstance(cs, testData.instance(i));
 			System.out.println("\n\nExpected??:\nResult: "
 					+ (value == 1.0 ? "FEMALE" : "MALE"));
+			System.out.println(cs + "            " + testData.numAttributes() + "            " + i);
 		}
+		
 		
 		/*weka.classifiers.Classifier cs = PREFILTERING ? trainNaiveBayes(data)
 				: trainFilteredClassifier(data);
@@ -151,15 +153,15 @@ public class WekaHandlerBlog {
 
 	/**
 	 * This method uses StringToWordVector filter that is attached to the returned FilteredClassifier
-	 * @return a trained FilteredClassifier that extends a J48 classifier
+	 * @return a trained FilteredClassifier that extends a NaiveBayes classifier
 	 */
 	public static FilteredClassifier trainFilteredClassifier(Instances data) {
 		try {
-			J48 classifierJ48 = new J48();
+			NaiveBayes classifierNaiveBayes = new NaiveBayes();
 			StringToWordVector filter = new StringToWordVector();
 			filter.setAttributeIndices("first");
 			FilteredClassifier fClassifier = new FilteredClassifier();
-			fClassifier.setClassifier(classifierJ48);
+			fClassifier.setClassifier(classifierNaiveBayes);
 			fClassifier.setFilter(filter);
 			fClassifier.buildClassifier(data);
 			System.out.println(fClassifier);
@@ -172,26 +174,11 @@ public class WekaHandlerBlog {
 
 	/**
 	 * THismethod does not use StringToWordVector filter
-	 * @return J48 trained classifier
+	 * @return NaiveBayes trained classifier
 	 */
-	public static J48 trainJ48(Instances data) {
-		// train J48 and output model
-		System.out.println("Training J48");
-		try {
-			J48 classifierJ48 = new J48();
-			new NaiveBayes();
-			classifierJ48.buildClassifier(data);
-			System.out.println(classifierJ48);
-			return classifierJ48;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
 	public static NaiveBayes trainNaiveBayes(Instances data) {
 		// train NaiveBayes and output model
-		System.out.println("Training J48");
+		System.out.println("Training NaiveBayes");
 		try {
 			NaiveBayes classifierNaiveBayes = new NaiveBayes();
 			classifierNaiveBayes.buildClassifier(data);
@@ -261,7 +248,7 @@ public class WekaHandlerBlog {
 		}
 	}
 	
-	public static double classifyInstance(Instances trainedData, 
+	public static double classifyInstance( 
 			weka.classifiers.Classifier classifier, Instance testData) {
 		
 		try {
