@@ -26,7 +26,7 @@ public class WekaHandlerBlog {
 
 	// Change this value to either explicitly apply pre-filtering (visible in
 	// the .arff), or to apply it internally, when building the classifier.
-	public static final boolean PREFILTERING = true;
+	public static final boolean PREFILTERING = false;
 
 	//public static String corpusFolderPath = "corpus-mails";
 	public static String trainPath = "blogstrain";
@@ -37,33 +37,28 @@ public class WekaHandlerBlog {
 		writeARFF(trainData, "train.arff");
 		Instances testData = buildARFF(new File(testPath));
 		writeARFF(testData, "test.arff");
-		
-		weka.classifiers.Classifier cs = PREFILTERING ? trainNaiveBayes(trainData)
-				: trainFilteredClassifier(trainData);
-		
-		
-		for(int i = 0; i < testData.numAttributes(); i++) {
-			double value = classifyInstance(cs, testData.instance(i));
-			System.out.println("\n\nExpected??:\nResult: "
-					+ (value == 1.0 ? "FEMALE" : "MALE"));
-			System.out.println(cs + "            " + testData.numAttributes() + "            " + i);
-		}
-		
-		
-		/*weka.classifiers.Classifier cs = PREFILTERING ? trainNaiveBayes(data)
-				: trainFilteredClassifier(data);
 
-		double expectedSpam = classifyString(data, cs, spamString);
-		System.out.println("\nExpectedSpam:\n" + spamString + "\nResult: "
-				+ (expectedSpam == 1.0 ? "HAM" : "SPAM"));
+		Instances newTrain;
+		Instances newTest;
+		try {
+			StringToWordVector filter = new StringToWordVector();
+			filter.setInputFormat(trainData); // initializing the filter once with training set
+			newTrain = Filter.useFilter(trainData, filter);  // configures the Filter based on train instances and returns filtered instances
+			newTest = Filter.useFilter(testData, filter);
+			
+			weka.classifiers.Classifier cs = PREFILTERING ? trainNaiveBayes(newTrain)
+					: trainFilteredClassifier(newTrain);
 
-		double expectedHam = classifyString(data, cs, hamString);
-		System.out.println("\nExpectedHam:\n" + hamString + "\nResult: "
-				+ (expectedHam == 1.0 ? "HAM" : "SPAM"));
-
-		double expectedSpam2 = classifyString(data, cs, spamString2);
-		System.out.println("\nExpectedSpam:\n" + spamString2 + "\nResult: "
-				+ (expectedSpam2 == 1.0 ? "HAM" : "SPAM"));*/
+			for(int i = 0; i < newTest.numAttributes(); i++) {
+				double value = classifyInstance(cs, newTest.instance(i));
+				System.out.println("\n\nExpected??:\nResult: "
+						+ (value == 1.0 ? "FEMALE" : "MALE"));
+				System.out.println(cs + "            " + newTest.numAttributes() + "            " + i);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 	}
 
 	private static void writeARFF(Instances data, String fileName) {
