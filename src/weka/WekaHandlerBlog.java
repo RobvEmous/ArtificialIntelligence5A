@@ -29,19 +29,24 @@ public class WekaHandlerBlog {
 	// the .arff), or to apply it internally, when building the classifier.
 	public static final boolean PREFILTERING = true;
 
-	public static String corpusFolderPath = "corpus-mails";
+	//public static String corpusFolderPath = "corpus-mails";
 	public static String trainPath = "blogstrain";
 	public static String testPath = "blogstest";
-
-	public static String spamString = "buy $ now!";
-	public static String hamString = "This won't waste your time, as it is not spam.";
-	public static String spamString2 = "It is not possible to unsubscribe from this spam, haha!";
 
 	public static void main(String[] args) {
 		Instances trainData = buildARFF(new File(trainPath));
 		writeARFF(trainData, "train.arff");
 		Instances testData = buildARFF(new File(testPath));
 		writeARFF(testData, "test.arff");
+		
+		weka.classifiers.Classifier cs = PREFILTERING ? trainNaiveBayes(trainData)
+				: trainFilteredClassifier(trainData);
+		
+		for(int i = 0; i < testData.numAttributes(); i++) {
+			double value = classifyInstance(trainData, cs, testData.instance(i));
+			System.out.println("\n\nExpected??:\nResult: "
+					+ (value == 1.0 ? "FEMALE" : "MALE"));
+		}
 		
 		/*weka.classifiers.Classifier cs = PREFILTERING ? trainNaiveBayes(data)
 				: trainFilteredClassifier(data);
