@@ -16,8 +16,10 @@ import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.StringToWordVector;
 
 /**
- * @author Derk Snijders
- * @date 1-12-2014
+ * @author Rob van Emous
+ * @author Mark van Doesum
+ * @author Victor Lap
+ * @date 2-12-2014
  */
 
 public class WekaHandlerBlog {
