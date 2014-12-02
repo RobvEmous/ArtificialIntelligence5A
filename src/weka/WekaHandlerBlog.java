@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
 
+import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.meta.FilteredClassifier;
 import weka.core.Attribute;
@@ -28,33 +29,31 @@ public class WekaHandlerBlog {
 	// the .arff), or to apply it internally, when building the classifier.
 	public static final boolean PREFILTERING = false;
 
-	//public static String corpusFolderPath = "corpus-mails";
 	public static String trainPath = "blogstrain";
 	public static String testPath = "blogstest";
+	
+	public static StringToWordVector filter = new StringToWordVector();
 
 	public static void main(String[] args) {
 		Instances trainData = buildARFF(new File(trainPath));
-		writeARFF(trainData, "train.arff");
 		Instances testData = buildARFF(new File(testPath));
-		writeARFF(testData, "test.arff");
 
 		Instances newTrain;
 		Instances newTest;
 		try {
-			StringToWordVector filter = new StringToWordVector();
+			
 			filter.setInputFormat(trainData); // initializing the filter once with training set
 			newTrain = Filter.useFilter(trainData, filter);  // configures the Filter based on train instances and returns filtered instances
 			newTest = Filter.useFilter(testData, filter);
+			writeARFF(newTrain, "train.arff");
+			writeARFF(newTest, "test.arff");
 			
 			weka.classifiers.Classifier cs = PREFILTERING ? trainNaiveBayes(newTrain)
 					: trainFilteredClassifier(newTrain);
 
-			for(int i = 0; i < newTest.numAttributes(); i++) {
-				double value = classifyInstance(cs, newTest.instance(i));
-				System.out.println("\n\nExpected??:\nResult: "
-						+ (value == 1.0 ? "FEMALE" : "MALE"));
-				System.out.println(cs + "            " + newTest.numAttributes() + "            " + i);
-			}
+			Evaluation ev = new Evaluation(newTrain);
+			ev.evaluateModel(cs, newTest);
+			System.out.println(ev.toSummaryString("\nResults\n=====\n", false));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -153,7 +152,6 @@ public class WekaHandlerBlog {
 	public static FilteredClassifier trainFilteredClassifier(Instances data) {
 		try {
 			NaiveBayes classifierNaiveBayes = new NaiveBayes();
-			StringToWordVector filter = new StringToWordVector();
 			filter.setAttributeIndices("first");
 			FilteredClassifier fClassifier = new FilteredClassifier();
 			fClassifier.setClassifier(classifierNaiveBayes);
@@ -182,76 +180,6 @@ public class WekaHandlerBlog {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
-		}
-	}
-
-	private static Instance buildNewFilteredInstanceForData(Instances data,
-			String instanceString) {
-		System.out.println("buildNewFilteredInstanceForData for text :"+ instanceString);
-		Instance newInstance = new Instance(1.0,
-				new double[data.numAttributes()]);
-		newInstance.setDataset(data);
-		Scanner scanner = new Scanner(instanceString);
-
-		while (scanner.hasNext()) {
-			String word = scanner.next();
-			Attribute attr = data.attribute(word);
-			if (attr != null) {
-				newInstance.setValue(attr, newInstance.value(attr) + 1);
-			}
-		}
-
-		scanner.close();
-		return newInstance;
-	}
-
-	private static Instance buildNewUnFilteredInstanceForData(Instances data,
-			String instanceString) {
-		System.out.println("buildNewUnFilteredInstanceForData for text :"+ instanceString);
-		double[] instanceValue = new double[data.numAttributes()];
-		instanceValue[0] = data.attribute(0).addStringValue(instanceString);
-		instanceValue[1] = 0;
-		Instance newInstance = new Instance(1.0, instanceValue);
-		newInstance.setDataset(data);
-		return newInstance;
-	}
-
-	/**
-	 * If PREFILTERING then method buildNewFilteredInstanceForData is used
-	 * else method buildNewUnFilteredInstanceForData is used to build a new Instance
-	 * @param data 
-	 * @param classifier used for classification of the given text string. IF PREFILTERING classifier has to be a FilteredClassifier
-	 * @param instanceSTring the text that will be classified
-	 * @return the double that represents the class value predicted by the classifier
-	 */
-	public static double classifyString(Instances data,
-			weka.classifiers.Classifier classifier, String instanceString) {
-
-		Instance newInstance;
-		if (PREFILTERING) {
-			newInstance = buildNewFilteredInstanceForData(data, instanceString);
-		} else {
-			newInstance = buildNewUnFilteredInstanceForData(data,
-					instanceString);
-		}
-		try {
-			double classification = classifier.classifyInstance(newInstance);
-			return classification;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return -1.0;
-		}
-	}
-	
-	public static double classifyInstance( 
-			weka.classifiers.Classifier classifier, Instance testData) {
-		
-		try {
-			double classification = classifier.classifyInstance(testData);
-			return classification;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return -1.0;
 		}
 	}
 }
