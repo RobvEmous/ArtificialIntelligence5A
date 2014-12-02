@@ -6,6 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * A classification of data in a certain type.
+ * 
+ * @author Rob
+ */
 public class Classification {
 	
 	private String type; //male or female etc.
@@ -17,12 +22,17 @@ public class Classification {
 		this.trainData = trainData;
 	}
 
+	/**
+	 * Creates a new classification.
+	 * 
+	 * @param type the type/name of the classification
+	 */
 	public Classification(String type) {
 		this(type, new HashMap<String, Integer>());
 	}
 	
 	/**
-	 * Creates a classification from already trained data.
+	 * Creates a classification object from already trained data.
 	 * 
 	 * @param savedFile the saved train data
 	 */
@@ -44,29 +54,56 @@ public class Classification {
 		}
 	}
 	
+	/**
+	 * Gets the type/name of the classification.
+	 * 
+	 * @return the type/name
+	 */
 	public String getType() {
 		return type;
 	}
 	
+	/**
+	 * Sets the type/name of the classification.
+	 * 
+	 * @param type the type/name
+	 */
 	public void setType(String type) {
 		this.type = type;
 	}
 	
+	/**
+	 * Gets the number of words this classifier has encountered while 
+	 * training.
+	 * 
+	 * @return the number of words
+	 */
 	public int getWordCounter() {
 		return wordCounter;
 	}
 	
+	/**
+	 * Gets the words and their number of occurrences combinations.
+	 * 
+	 * @return the combinations
+	 */	
 	public Map<String, Integer> getTrainData() {
 		return trainData;
 	}
 	
+	/**
+	 * Sets the words and their number of occurrences combinations.
+	 * 
+	 * @param trainData the combinations
+	 */	
 	public void setTrainData(Map<String, Integer> trainData) {
 		this.trainData = trainData;
 	}
 	
 	/**
-	 * Add data to train the classification.
-	 * @param words
+	 * Adds data to train the classification.
+	 * 
+	 * @param words the tokenized words
 	 */
 	public void addTrainData(String[] words) {
 		for (String word : words) {
@@ -83,12 +120,13 @@ public class Classification {
 	}
 		
 	/**
-	 * Gets the percentage the list of words (from a document?) match with
-	 * this classification.
+	 * Gets the ratio the list of words match with
+	 * this classification.<br>
+	 * A value of 0 means a total match, otherwise the value is lower.
 	 * 
 	 * @param words to test
 	 * @param smoothFactor the factor to smooth the results with
-	 * @return the match percentage
+	 * @return the match ratio
 	 */
 	public double matchWords(String[] words, double smoothFactor) {
 		double chance = 0d;
@@ -99,6 +137,13 @@ public class Classification {
 		return chance;
 	}
 	
+	/**
+	 * The percentage the word matches the classification.
+	 * 
+	 * @param word to test
+	 * @param smoothFactor the factor to smooth the results with
+	 * @return the match percentage
+	 */
 	private double matchWord(String word, double smoothFactor) {
 		int occurence;
 		if (trainData.containsKey(word)) {
@@ -129,8 +174,8 @@ public class Classification {
 	}
 	
 	/**
-	 * Get the String representation of the train data to write it to a 
-	 * file.
+	 * Get the String representation of the classification (the train 
+	 * data) to write it to a file.
 	 * 
 	 * @return the string to write
 	 */

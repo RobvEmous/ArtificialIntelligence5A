@@ -3,63 +3,74 @@ package main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
+/**
+ * A naïve Bayesian classifier implementation.
+ * 
+ * @author Rob & Mark
+ */
 public class BayesianClassifier {
 	
-	private Classification male;
-	private Classification female;
+	private List<Classification> classifications;
+	private double smoothFactor;
 	
-	public BayesianClassifier(Classification[] classifications) {
-		this.male = classifications[0];
-		this.female = classifications[1];
-		test();
+	public BayesianClassifier(Classification[] classifications, double smoothFactor) {
+		this.classifications = new ArrayList<Classification>();
+		for (Classification classification : classifications) {
+			this.classifications.add(classification);
+		}
+		this.smoothFactor = smoothFactor;
 	}
 	
-	public String classified(File file){
-		String toReturn = null;
+	public BayesianClassifier(List<Classification> classifications, double smoothFactor) {
+		this.classifications = new ArrayList<Classification>(classifications);
+		this.smoothFactor = smoothFactor;
+	}
+	
+	public List<Classification> getClassifications() {
+		return classifications;
+	}
+	
+	public void setClassifications(List<Classification> classifications) {
+		this.classifications = classifications;
+	}
+	
+	public double getSmoothFactor() {
+		return smoothFactor;
+	}
+	
+	public void setSmoothFactor(double smoothFactor) {
+		this.smoothFactor = smoothFactor;
+	}
+	
+	public String classify(String fileName) {
+		return classify(new File(fileName));
+	}
+	
+	public String classify(File file) {
+		String line;
 		try {
 			@SuppressWarnings("resource")
 			Scanner scan = new Scanner(file).useDelimiter("\\Z");
-			String line = scan.next();
-			//System.out.println(line);
-			double chanceMale = male.matchWords(Tools.tokenize(line), 0.001);
-			double chanceFemale = female.matchWords(Tools.tokenize(line), 0.001);
-			System.out.println("Male: " + chanceMale + " Female: " + chanceFemale);
-			if (chanceMale > chanceFemale) {
-				toReturn = "Male";
-			} else {
-				toReturn = "Female";
-			}
+			line = scan.next();
 			scan.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+			return null;
 		}
-		return toReturn;
+		double bestRatio = -Double.MAX_VALUE;
+		String bestTypeMatch = null;
+		for (Classification classification : classifications) {
+			double tempRatio = classification.matchWords(
+					Tools.tokenize(line), smoothFactor);
+			if (tempRatio > bestRatio) {
+				bestTypeMatch = classification.getType();
+				bestRatio = tempRatio;
+			}
+		}		
+		return bestTypeMatch;
 	}
 	
-	public void test() {
-		String femalePath = "blogstest/F/";
-		String malePath = "blogstest/M/";
-		String[] femaleFiles = new File(femalePath).list();
-		String[] maleFiles = new File(malePath).list();
-		ArrayList<String> toReturn = new ArrayList<String>();
-		for(String file : femaleFiles) {
-			toReturn.add(classified(new File(femalePath + file)) + " " + file);
-			//toReturn.add(classified(new File(femalePath + file)));
-		}
-		for(String file : maleFiles) {
-			toReturn.add(classified(new File(malePath + file)));
-		}
-		System.out.println(toReturn);
-	}
-	
-	/*public static void main(String[] args) {
-		BayesianClassifier token = new BayesianClassifier(null);
-		String str = "Hello, everyone. Do you like the new layout?";
-		System.out.println("String:\t\t" + str);	
-		String[] tokens = Tools.tokenize(str);
-		System.out.println("Tokenized:\t" + Arrays.toString(tokens));	
-	}*/
 }
-
