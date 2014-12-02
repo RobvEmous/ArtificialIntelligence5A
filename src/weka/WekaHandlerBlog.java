@@ -236,4 +236,16 @@ public class WekaHandlerBlog {
 			return -1.0;
 		}
 	}
+	
+	public static double classifyInstance(Instances trainedData, 
+			weka.classifiers.Classifier classifier, Instance testData) {
+		
+		try {
+			double classification = classifier.classifyInstance(testData);
+			return classification;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1.0;
+		}
+	}
 }
