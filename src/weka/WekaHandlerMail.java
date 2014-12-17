@@ -24,25 +24,22 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
 
 public class WekaHandlerMail {
 
-	public static String trainPath = "spammail";
+	public static String trainPath = "mailtrain";
+	public static String testPath = "mailtest";
 	
 	public static void main(String[] args) throws IOException {
 		Instances trainData = buildARFF(new File(trainPath));
-		
-		int trainSize = (int) Math.round(trainData.numInstances()) * 90 / 100;
-		int testSize = trainData.numInstances() - trainSize;
-		Instances newTrain = new Instances(trainData, 0, trainSize);
-		Instances newTest = new Instances(trainData, trainSize, testSize);
+		Instances testData = buildARFF(new File(testPath));
 		
 		try {
 			StringToWordVector filter = createFilter(trainData);
-			Instances train = Filter.useFilter(newTrain, filter);
-			Instances test = Filter.useFilter(newTest, filter);
+			Instances train = Filter.useFilter(trainData, filter);
+			Instances test = Filter.useFilter(testData, filter);
 			
 			writeARFF(train, "trainMail.arff");
 			writeARFF(test, "testMail.arff");
 			
-			weka.classifiers.Classifier cs = trainNaiveBayes(train);
+			weka.classifiers.Classifier cs = trainLogisticRegression(train);
 
 			Evaluation ev = new Evaluation(train);
 			ev.evaluateModel(cs, test);
