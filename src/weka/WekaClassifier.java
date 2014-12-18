@@ -22,8 +22,9 @@ import weka.filters.unsupervised.attribute.StringToWordVector;
  * @date 2-12-2014
  */
 
-public class WekaHandlerBlog {
+public class WekaClassifier {
 
+	//Path to folder with train/test data. Works with both datasets
 	public static String trainPath = "blogstrain";
 	public static String testPath = "blogstest";
 	
@@ -36,9 +37,13 @@ public class WekaHandlerBlog {
 			Instances train = Filter.useFilter(trainData, filter);
 			Instances test = Filter.useFilter(testData, filter);
 			
-			writeARFF(train, "train.arff");
-			writeARFF(test, "test.arff");
+			//Delete '//' in order to write the data to arff-files
+			//writeARFF(train, "train.arff");
+			//writeARFF(test, "test.arff");
 			
+			/*Change to classifier of choice. Options are:
+			 * trainNaiveBayes, trainJ48, trainLogisticRegression
+			*/
 			weka.classifiers.Classifier cs = trainNaiveBayes(train);
 
 			Evaluation ev = new Evaluation(train);
