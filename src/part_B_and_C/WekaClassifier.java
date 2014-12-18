@@ -1,4 +1,4 @@
-package weka;
+package part_B_and_C;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,7 +28,7 @@ public class WekaClassifier {
 	public static String trainPath = "blogstrain";
 	public static String testPath = "blogstest";
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		Instances trainData = buildARFF(new File(trainPath));
 		Instances testData = buildARFF(new File(testPath));
 		
@@ -43,7 +43,7 @@ public class WekaClassifier {
 			
 			/*Change to classifier of choice. Options are:
 			 * trainNaiveBayes, trainJ48, trainLogisticRegression
-			*/
+			 */
 			weka.classifiers.Classifier cs = trainNaiveBayes(train);
 
 			Evaluation ev = new Evaluation(train);
